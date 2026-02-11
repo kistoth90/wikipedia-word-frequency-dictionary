@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Query
 from schema import KeywordSchema
 
+from src.httpx import WikiFrequencyCounter
+
 app = FastAPI()
 
 
@@ -12,7 +14,11 @@ async def word_frequency(
     """A word-frequency dictionary that includes the count
     and percentage frequency of each word found in the traversed articles."""
 
-    raise NotImplementedError("Waiting for further implementation")
+    wiki = WikiFrequencyCounter(article, depth)
+
+    result = await wiki.run()
+    
+    return result
 
 
 @app.post("/keywords")

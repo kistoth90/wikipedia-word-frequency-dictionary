@@ -1,0 +1,21 @@
+[project]
+name = "wiki"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Csaba Tóth",email = "csabitoth@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard] (>=0.128.7,<0.129.0)",
+    "pytest (>=9.0.2,<10.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "logger (>=1.4,<2.0)",
+    "beautifulsoup4 (>=4.14.3,<5.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
