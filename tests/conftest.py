@@ -34,3 +34,19 @@ def mock_httpx_response():
         response.text = text
         return response
     return _create_response
+
+
+@pytest.fixture
+def sample_frequency_dict():
+    return {
+        "python": {"count": 3, "percentage": 21.43},
+        "programming": {"count": 2, "percentage": 14.29},
+        "is": {"count": 2, "percentage": 14.29},
+        "a": {"count": 1, "percentage": 7.14},
+        "language": {"count": 1, "percentage": 7.14},
+        "widely": {"count": 1, "percentage": 7.14},
+        "used": {"count": 1, "percentage": 7.14},
+        "many": {"count": 1, "percentage": 7.14},
+        "developers": {"count": 1, "percentage": 7.14},
+        "love": {"count": 1, "percentage": 7.14}
+    }
