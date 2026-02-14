@@ -9,10 +9,14 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard] (>=0.128.7,<0.129.0)",
-    "pytest (>=9.0.2,<10.0.0)",
+    "pytest (>=8.2,<9.0.0)",
+    "pytest-asyncio (>=0.25.2,<0.26.0)",
+    "pytest-mock (>=3.14.0,<4.0.0)",
+    "pytest-cov (>=6.0.0,<7.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
     "logger (>=1.4,<2.0)",
-    "beautifulsoup4 (>=4.14.3,<5.0.0)"
+    "beautifulsoup4 (>=4.14.3,<5.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)"
 ]
 
 
