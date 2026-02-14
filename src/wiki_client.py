@@ -18,7 +18,6 @@ class WikiFrequencyCounter:
         self.article = article
         self.depth = depth
         self.word_counter = Counter()  # Use Counter directly for better memory efficiency
-        self.word_frequency = {}
         self._semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
         self._client: httpx.AsyncClient | None = None
 
@@ -69,8 +68,10 @@ class WikiFrequencyCounter:
         Returns:
             List of article titles (URL-decoded, without /wiki/ prefix)
         """
-        # Remove navbox and infobox elements before extracting links
-        for element in body_content.find_all(class_=lambda x: x and ('navbox' in x.lower() or 'infobox' in x.lower())):
+        # Remove navbox, infobox, noprint, and noviewer elements before extracting links
+        for element in body_content.find_all(class_=lambda x: x and any(
+            cls in x.lower() for cls in ['navbox', 'infobox', 'noprint', 'noviewer']
+        )):
             element.decompose()
 
         links = set()  # Use set to avoid duplicates
@@ -148,8 +149,14 @@ class WikiFrequencyCounter:
         # Extract links BEFORE decomposing tables (tables contain valid links)
         links = self._extract_links_from_soup(body_content) if need_links else []
 
-        # Remove script, style, and navigation elements that don't contain article text
+        # Remove script, style, navigation, and non-content elements
         for element in body_content.find_all(['script', 'style', 'nav', 'table']):
+            element.decompose()
+        
+        # Remove elements with noprint and noviewer classes (navigation, metadata, etc.)
+        for element in body_content.find_all(class_=lambda x: x and any(
+            cls in x.lower() for cls in ['noprint', 'noviewer']
+        )):
             element.decompose()
 
         # Get text with separator to avoid word concatenation
@@ -283,9 +290,9 @@ class WikiFrequencyCounter:
             await self._close_client()
 
         calc_start = time.time()
-        self.word_frequency = self.calculate_frequency()
+        word_frequency = self.calculate_frequency()
         calc_time = time.time() - calc_start
 
         total_time = time.time() - overall_start
         logging.info(f"Total execution time: {total_time:.2f}s (frequency calculation: {calc_time:.3f}s)")
-        return self.word_frequency
+        return word_frequency
