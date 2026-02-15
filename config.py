@@ -17,14 +17,14 @@ MIN_DEPTH = 1
 
 USER_AGENT = os.getenv(
     "USER_AGENT",
-    "WikiFrequencyDictionary/1.0 (https://github.com/kistoth90/wikipedia-word-frequency-dictionary; csabitoth@gmail.com)"
+    "WikiFrequencyDictionary/1.0 (https://github.com/kistoth90/wikipedia-word-frequency-dictionary; csabitoth@gmail.com)",
 )
 
-HEADERS = {
-    "User-Agent": USER_AGENT
-}
+HEADERS = {"User-Agent": USER_AGENT}
 
 
 def get_article_url(article: str) -> str:
     """Construct Wikipedia article URL."""
-    return f"{WIKIPEDIA_DOMAIN}/wiki/{article}"
+
+    encoded_article = article.replace(" ", "_")
+    return f"{WIKIPEDIA_DOMAIN}/wiki/{encoded_article}"

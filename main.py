@@ -1,5 +1,6 @@
 import logging
 from fastapi import FastAPI, Query, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from schema import KeywordSchema
 
 
@@ -10,6 +11,15 @@ from utils.filters import filter_by_ignore_list, filter_by_percentile
 setup_logging(level=logging.INFO)
 
 app = FastAPI()
+
+# Configure CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific origins
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 
 async def _compute_frequency(article: str, depth: int) -> dict:
@@ -27,8 +37,8 @@ async def _compute_frequency(article: str, depth: int) -> dict:
                 detail={
                     "error": "Article not found or no content extracted",
                     "article": article,
-                    "suggestion": "Please verify the article title and ensure it exists on Wikipedia"
-                }
+                    "suggestion": "Please verify the article title and ensure it exists on Wikipedia",
+                },
             )
 
         return result
@@ -36,13 +46,16 @@ async def _compute_frequency(article: str, depth: int) -> dict:
     except HTTPException:
         raise
     except Exception as e:
-        logging.error(f"Error processing request for article '{article}' at depth {depth}: {e}", exc_info=True)
+        logging.error(
+            f"Error processing request for article '{article}' at depth {depth}: {e}",
+            exc_info=True,
+        )
         raise HTTPException(
             status_code=500,
             detail={
                 "error": "Internal server error",
-                "message": "An unexpected error occurred while processing your request"
-            }
+                "message": "An unexpected error occurred while processing your request",
+            },
         )
 
 
@@ -51,14 +64,9 @@ async def word_frequency(
     article: str = Query(
         ...,
         min_length=1,
-        description="Wikipedia article title (e.g., 'Python', not URL)"
+        description="Wikipedia article title (e.g., 'Python', not URL)",
     ),
-    depth: int = Query(
-        ...,
-        ge=1,
-        le=5,
-        description="Traversal depth (1-5)"
-    )
+    depth: int = Query(..., ge=1, le=5, description="Traversal depth (1-5)"),
 ):
     """A word-frequency dictionary that includes the count
     and percentage frequency of each word found in the traversed articles."""
@@ -69,8 +77,8 @@ async def word_frequency(
             detail={
                 "error": "Invalid article parameter",
                 "message": "Please provide article title only, not full URL",
-                "example": "Use 'Python' instead of 'https://hu.wikipedia.org/wiki/Python'"
-            }
+                "example": "Use 'Python' instead of 'https://hu.wikipedia.org/wiki/Python'",
+            },
         )
 
     return await _compute_frequency(article, depth)

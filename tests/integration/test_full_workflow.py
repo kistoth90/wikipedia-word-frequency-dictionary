@@ -27,8 +27,8 @@ class TestFullWorkflow:
         mock_get = AsyncMock(return_value=mock_response)
         mock_client = _make_mock_client(mock_get)
 
-        with patch.object(wiki, '_open_client', new_callable=AsyncMock) as mock_open:
-            mock_open.side_effect = lambda: setattr(wiki, '_client', mock_client)
+        with patch.object(wiki, "_open_client", new_callable=AsyncMock) as mock_open:
+            mock_open.side_effect = lambda: setattr(wiki, "_client", mock_client)
 
             result = await wiki.run()
 
@@ -61,8 +61,8 @@ class TestFullWorkflow:
         mock_get = AsyncMock(return_value=mock_response)
         mock_client = _make_mock_client(mock_get)
 
-        with patch.object(wiki, '_open_client', new_callable=AsyncMock) as mock_open:
-            mock_open.side_effect = lambda: setattr(wiki, '_client', mock_client)
+        with patch.object(wiki, "_open_client", new_callable=AsyncMock) as mock_open:
+            mock_open.side_effect = lambda: setattr(wiki, "_client", mock_client)
 
             result = await wiki.run()
 
@@ -86,8 +86,8 @@ class TestFullWorkflow:
         mock_get = AsyncMock(return_value=mock_response)
         mock_client = _make_mock_client(mock_get)
 
-        with patch.object(wiki, '_open_client', new_callable=AsyncMock) as mock_open:
-            mock_open.side_effect = lambda: setattr(wiki, '_client', mock_client)
+        with patch.object(wiki, "_open_client", new_callable=AsyncMock) as mock_open:
+            mock_open.side_effect = lambda: setattr(wiki, "_client", mock_client)
 
             # Get base frequency
             result = await wiki.run()
@@ -127,8 +127,8 @@ class TestFullWorkflow:
         mock_get = AsyncMock(side_effect=mock_get_side_effect)
         mock_client = _make_mock_client(mock_get)
 
-        with patch.object(wiki, '_open_client', new_callable=AsyncMock) as mock_open:
-            mock_open.side_effect = lambda: setattr(wiki, '_client', mock_client)
+        with patch.object(wiki, "_open_client", new_callable=AsyncMock) as mock_open:
+            mock_open.side_effect = lambda: setattr(wiki, "_client", mock_client)
 
             result = await wiki.run()
 

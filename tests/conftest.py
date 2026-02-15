@@ -4,25 +4,26 @@ from unittest.mock import Mock
 from fastapi.testclient import TestClient
 from main import app
 
-
 TEST_FILE_PATH = Path(__file__).parent / "sites"
+
 
 @pytest.fixture
 def test_client():
     """FastAPI test client."""
     return TestClient(app)
 
+
 @pytest.fixture
 def gyorzamoly_html():
     filepath = TEST_FILE_PATH / "Győrzámoly – Wikipédia.html"
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         return f.read()
 
 
 @pytest.fixture
 def msci_html():
     filepath = TEST_FILE_PATH / "MSCI - Wikipedia.html"
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         return f.read()
 
 
@@ -33,6 +34,7 @@ def mock_httpx_response():
         response.status_code = status_code
         response.text = text
         return response
+
     return _create_response
 
 
@@ -48,5 +50,5 @@ def sample_frequency_dict():
         "used": {"count": 1, "percentage": 7.14},
         "many": {"count": 1, "percentage": 7.14},
         "developers": {"count": 1, "percentage": 7.14},
-        "love": {"count": 1, "percentage": 7.14}
+        "love": {"count": 1, "percentage": 7.14},
     }

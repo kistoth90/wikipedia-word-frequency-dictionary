@@ -17,7 +17,9 @@ class WikiFrequencyCounter:
     def __init__(self, article: str, depth: int):
         self.article = article
         self.depth = depth
-        self.word_counter = Counter()  # Use Counter directly for better memory efficiency
+        self.word_counter = (
+            Counter()
+        )  # Use Counter directly for better memory efficiency
         self._semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
         self._client: httpx.AsyncClient | None = None
 
@@ -42,11 +44,15 @@ class WikiFrequencyCounter:
                 return None
 
             if r.status_code != status.HTTP_200_OK:
-                logging.error(f"Error fetching article {article}: status {r.status_code}")
+                logging.error(
+                    f"Error fetching article {article}: status {r.status_code}"
+                )
                 return None
 
             fetch_time = time.time() - fetch_start
-            logging.info(f"Fetched '{article}' in {fetch_time:.3f}s (size: {len(r.text)/1024:.1f}KB)")
+            logging.info(
+                f"Fetched '{article}' in {fetch_time:.3f}s (size: {len(r.text)/1024:.1f}KB)"
+            )
             return r.text
 
         except httpx.TimeoutException:
@@ -69,9 +75,12 @@ class WikiFrequencyCounter:
             List of article titles (URL-decoded, without /wiki/ prefix)
         """
         # Remove navbox, infobox, noprint, and noviewer elements before extracting links
-        for element in body_content.find_all(class_=lambda x: x and any(
-            cls in x.lower() for cls in ['navbox', 'infobox', 'noprint', 'noviewer']
-        )):
+        for element in body_content.find_all(
+            class_=lambda x: x
+            and any(
+                cls in x.lower() for cls in ["navbox", "infobox", "noprint", "noviewer"]
+            )
+        ):
             element.decompose()
 
         links = set()  # Use set to avoid duplicates
@@ -85,10 +94,12 @@ class WikiFrequencyCounter:
             if href.startswith("/wiki/"):
                 # Relative link
                 article_title = href[6:]
-            elif "/wiki/" in href and ("wikipedia.org" in href or "wikipédia" in href.lower()):
+            elif "/wiki/" in href and (
+                "wikipedia.org" in href or "wikipédia" in href.lower()
+            ):
                 # Absolute Wikipedia link
                 wiki_index = href.find("/wiki/")
-                article_title = href[wiki_index + 6:]
+                article_title = href[wiki_index + 6 :]
             else:
                 # Not a Wikipedia article link
                 continue
@@ -125,7 +136,9 @@ class WikiFrequencyCounter:
         logging.debug(f"Extracted {len(links)} unique links from article")
         return list(links)
 
-    def extract_words_and_links(self, html_text: str, need_links: bool) -> tuple[Counter, list[str]]:
+    def extract_words_and_links(
+        self, html_text: str, need_links: bool
+    ) -> tuple[Counter, list[str]]:
         """Parse HTML once, extract words and optionally links.
 
         Thread-safe: returns a Counter instead of mutating shared state.
@@ -150,17 +163,18 @@ class WikiFrequencyCounter:
         links = self._extract_links_from_soup(body_content) if need_links else []
 
         # Remove script, style, navigation, and non-content elements
-        for element in body_content.find_all(['script', 'style', 'nav', 'table']):
+        for element in body_content.find_all(["script", "style", "nav", "table"]):
             element.decompose()
-        
+
         # Remove elements with noprint and noviewer classes (navigation, metadata, etc.)
-        for element in body_content.find_all(class_=lambda x: x and any(
-            cls in x.lower() for cls in ['noprint', 'noviewer']
-        )):
+        for element in body_content.find_all(
+            class_=lambda x: x
+            and any(cls in x.lower() for cls in ["noprint", "noviewer"])
+        ):
             element.decompose()
 
         # Get text with separator to avoid word concatenation
-        text = body_content.get_text(separator=' ', strip=True)
+        text = body_content.get_text(separator=" ", strip=True)
 
         words = WORD_PATTERN.findall(text)
         word_counter = Counter(word.lower() for word in words)
@@ -212,7 +226,9 @@ class WikiFrequencyCounter:
         )
         return frequency_dict
 
-    async def process_article(self, article: str, current_depth: int) -> tuple[str, bool, list[str]]:
+    async def process_article(
+        self, article: str, current_depth: int
+    ) -> tuple[str, bool, list[str]]:
         """Process a single article: fetch HTML, extract words and links.
 
         Args:
@@ -252,8 +268,7 @@ class WikiFrequencyCounter:
         return (article, True, links)
 
     async def run(self) -> dict:
-        """Process articles up to specified depth using breadth-first traversal with concurrent fetching.
-        """
+        """Process articles up to specified depth using breadth-first traversal with concurrent fetching."""
         overall_start = time.time()
         current_depth = 0
         current_level = [self.article]  # Articles to process at current depth
@@ -265,15 +280,22 @@ class WikiFrequencyCounter:
                 level_start = time.time()
 
                 # Filter out already visited articles
-                articles_to_process = [article for article in current_level if article not in visited]
+                articles_to_process = [
+                    article for article in current_level if article not in visited
+                ]
 
                 # Mark as visited
                 visited.update(articles_to_process)
 
-                logging.info(f"Starting depth level {current_depth + 1} with {len(articles_to_process)} articles to process concurrently")
+                logging.info(
+                    f"Starting depth level {current_depth + 1} with {len(articles_to_process)} articles to process concurrently"
+                )
 
                 # Process all articles at this level concurrently
-                tasks = [self.process_article(article, current_depth) for article in articles_to_process]
+                tasks = [
+                    self.process_article(article, current_depth)
+                    for article in articles_to_process
+                ]
                 results = await asyncio.gather(*tasks)
 
                 # Collect links for next level
@@ -285,7 +307,9 @@ class WikiFrequencyCounter:
                 current_depth += 1
                 current_level = next_level
                 level_time = time.time() - level_start
-                logging.info(f"Completed depth level {current_depth} in {level_time:.2f}s, found {len(next_level)} articles for next level")
+                logging.info(
+                    f"Completed depth level {current_depth} in {level_time:.2f}s, found {len(next_level)} articles for next level"
+                )
         finally:
             await self._close_client()
 
@@ -294,5 +318,7 @@ class WikiFrequencyCounter:
         calc_time = time.time() - calc_start
 
         total_time = time.time() - overall_start
-        logging.info(f"Total execution time: {total_time:.2f}s (frequency calculation: {calc_time:.3f}s)")
+        logging.info(
+            f"Total execution time: {total_time:.2f}s (frequency calculation: {calc_time:.3f}s)"
+        )
         return word_frequency

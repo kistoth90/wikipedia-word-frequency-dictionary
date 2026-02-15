@@ -1,10 +1,10 @@
 """Filtering utilities for word frequency dictionaries."""
+
 import logging
 
 
 def filter_by_ignore_list(
-    frequency_dict: dict[str, dict[str, float | int]],
-    ignore_list: list[str]
+    frequency_dict: dict[str, dict[str, float | int]], ignore_list: list[str]
 ) -> dict[str, dict[str, float | int]]:
     """Remove words from frequency dictionary that are in ignore list.
 
@@ -41,8 +41,7 @@ def filter_by_ignore_list(
 
 
 def filter_by_percentile(
-    frequency_dict: dict[str, dict[str, float | int]],
-    percentile: int
+    frequency_dict: dict[str, dict[str, float | int]], percentile: int
 ) -> dict[str, dict[str, float | int]]:
     """Keep only words with frequency >= percentile threshold.
 
