@@ -11,6 +11,8 @@ from urllib.parse import unquote
 from config import HEADERS, get_article_url, REQUEST_TIMEOUT, MAX_CONCURRENT_REQUESTS
 
 WORD_PATTERN = re.compile(r"\b[a-záéíóöőúüűA-ZÁÉÍÓÖŐÚÜŰ]+\b")
+# Classes to exclude from content extraction (navigation, metadata, etc.)
+EXCLUDED_CLASSES = ["navbox", "infobox", "noprint", "noviewer", "printfooter"]
 
 
 class WikiFrequencyCounter:
@@ -74,12 +76,10 @@ class WikiFrequencyCounter:
         Returns:
             List of article titles (URL-decoded, without /wiki/ prefix)
         """
-        # Remove navbox, infobox, noprint, and noviewer elements before extracting links
+        # Remove excluded classes before extracting links
         for element in body_content.find_all(
             class_=lambda x: x
-            and any(
-                cls in x.lower() for cls in ["navbox", "infobox", "noprint", "noviewer"]
-            )
+            and any(cls in x.lower() for cls in EXCLUDED_CLASSES)
         ):
             element.decompose()
 
@@ -166,10 +166,10 @@ class WikiFrequencyCounter:
         for element in body_content.find_all(["script", "style", "nav", "table"]):
             element.decompose()
 
-        # Remove elements with noprint and noviewer classes (navigation, metadata, etc.)
+        # Remove elements with excluded classes (navigation, metadata, etc.)
         for element in body_content.find_all(
             class_=lambda x: x
-            and any(cls in x.lower() for cls in ["noprint", "noviewer"])
+            and any(cls in x.lower() for cls in EXCLUDED_CLASSES)
         ):
             element.decompose()
 
