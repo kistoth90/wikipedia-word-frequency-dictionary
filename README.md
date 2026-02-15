@@ -102,38 +102,18 @@ Returns filtered word frequency analysis.
 4. **Stop the application:**
    ```bash
    docker-compose down
-   ```
-
-### Docker Commands
-
-- **Build the image:**
-  ```bash
-  docker-compose build
-  ```
-
-- **Start in detached mode:**
-  ```bash
-  docker-compose up -d
-  ```
-
-- **View logs:**
-  ```bash
-  docker-compose logs -f
-  ```
-
-- **Restart the service:**
-  ```bash
-  docker-compose restart
-  ```
 
 ### Environment Variables
 
 Configure in your `.env` file:
-- `WIKIPEDIA_LANG`: Wikipedia language code (default: `en`)
-- `REQUEST_TIMEOUT`: HTTP request timeout in seconds (default: `30.0`)
-- `MAX_CONCURRENT_REQUESTS`: Maximum concurrent requests (default: `5`)
-- `MAX_DEPTH`: Maximum traversal depth (default: `5`)
-- `USER_AGENT`: Custom user agent string (optional)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `WIKIPEDIA_LANG` | Wikipedia language code | `en` |
+| `REQUEST_TIMEOUT` | HTTP request timeout in seconds | `30.0` |
+| `MAX_CONCURRENT_REQUESTS` | Maximum concurrent requests | `5` |
+| `MAX_DEPTH` | Maximum traversal depth | `5` |
+| `USER_AGENT` | Custom user agent string | (optional) |
 
 ## Local Development
 
