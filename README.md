@@ -1,5 +1,204 @@
 # Wikipedia Word-Frequency Dictionary
 
+A FastAPI application that analyzes word frequency across Wikipedia articles by recursively traversing article links up to a specified depth.
+
+## Overview
+
+This application fetches Wikipedia articles, extracts their content and links, then recursively processes linked articles to build a comprehensive word-frequency analysis. It tracks visited articles to prevent infinite loops and provides filtering capabilities for refined keyword extraction.
+
+## Process Flow
+
+```mermaid
+graph TD
+    A[Client Request] --> B{Endpoint}
+    B -->|GET /word-frequency| C[Parse Parameters]
+    B -->|POST /keywords| D[Parse Request Body]
+    
+    C --> E[WikiFrequencyCounter]
+    D --> E
+    
+    E --> F[Fetch Article from Wikipedia]
+    F --> G[Extract Text Content]
+    F --> H[Extract Article Links]
+    
+    G --> I[Count Word Frequencies]
+    H --> J{Depth > 0?}
+    
+    J -->|Yes| K[Queue Linked Articles]
+    K --> L{Already Visited?}
+    L -->|No| F
+    L -->|Yes| M[Skip Article]
+    
+    J -->|No| N[Aggregate Results]
+    M --> N
+    I --> N
+    
+    N --> O[Calculate Percentages]
+    O --> P{POST endpoint?}
+    
+    P -->|Yes| Q[Apply Ignore List Filter]
+    Q --> R[Apply Percentile Filter]
+    R --> S[Return Filtered Results]
+    
+    P -->|No| S[Return Full Results]
+```
+
+## API Endpoints
+
+### `GET /word-frequency`
+Analyzes word frequency across Wikipedia articles.
+
+**Parameters:**
+- `article` (string): Wikipedia article title (e.g., "Python", not URL)
+- `depth` (int): Traversal depth (1-5)
+
+**Response:**
+```json
+{
+  "word": {
+    "count": 42,
+    "percentage": 2.5
+  }
+}
+```
+
+### `POST /keywords`
+Returns filtered word frequency analysis.
+
+**Request Body:**
+```json
+{
+  "article": "Python",
+  "depth": 2,
+  "ignore_list": ["the", "a", "an"],
+  "percentile": 75
+}
+```
+
+**Response:** Same format as `/word-frequency`, but filtered by ignore list and percentile threshold.
+
+## Docker Setup
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Running with Docker Compose
+
+1. **Copy the environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Build and start the application:**
+   ```bash
+   docker-compose up --build
+   ```
+
+3. **Access the API:**
+   - API Documentation: http://localhost:8000/docs
+   - Alternative Documentation: http://localhost:8000/redoc
+
+4. **Stop the application:**
+   ```bash
+   docker-compose down
+   ```
+
+### Docker Commands
+
+- **Build the image:**
+  ```bash
+  docker-compose build
+  ```
+
+- **Start in detached mode:**
+  ```bash
+  docker-compose up -d
+  ```
+
+- **View logs:**
+  ```bash
+  docker-compose logs -f
+  ```
+
+- **Restart the service:**
+  ```bash
+  docker-compose restart
+  ```
+
+### Environment Variables
+
+Configure in your `.env` file:
+- `WIKIPEDIA_LANG`: Wikipedia language code (default: `en`)
+- `REQUEST_TIMEOUT`: HTTP request timeout in seconds (default: `30.0`)
+- `MAX_CONCURRENT_REQUESTS`: Maximum concurrent requests (default: `5`)
+- `MAX_DEPTH`: Maximum traversal depth (default: `5`)
+- `USER_AGENT`: Custom user agent string (optional)
+
+## Local Development
+
+### Prerequisites
+- Python 3.12+
+- Poetry
+
+### Setup
+
+1. **Install dependencies:**
+   ```bash
+   poetry install
+   ```
+
+2. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Run the application:**
+   ```bash
+   poetry run fastapi dev main.py
+   ```
+
+4. **Run tests:**
+   ```bash
+   poetry run pytest
+   ```
+
+4. **Run tests coverage: <i>(95% coverage)</i>**
+   ```bash
+   poetry run pytest --cov=. --cov-report=term-missing
+   ```
+
+
+## Project Structure
+
+```
+.
+├── src/
+│   └── wiki_client.py       # Core Wikipedia traversal logic
+├── utils/
+│   └── filters.py           # Word filtering utilities
+├── tests/
+│   ├── unit/                # Unit tests
+│   └── integration/         # Integration tests
+├── main.py                  # FastAPI application
+├── schema.py                # Pydantic models
+├── config.py                # Configuration management
+├── logging_config.py        # Logging setup
+├── Dockerfile               # Docker image definition
+└── docker-compose.yml       # Docker Compose configuration
+```
+
+## Features
+
+- **Recursive Traversal**: Follows Wikipedia links up to specified depth
+- **Cycle Detection**: Tracks visited articles to prevent infinite loops
+- **Concurrent Processing**: Handles multiple article fetches efficiently
+- **Flexible Filtering**: Supports ignore lists and percentile-based filtering
+- **Comprehensive Testing**: Unit and integration tests included
+- **Docker Support**: Containerized deployment ready
+
+## Task description
+
 
 ## Objective
 Develop a Python server application that takes an article and a depth parameter as input, and generates a word-frequency dictionary by traversing Wikipedia articles up to the specified depth.
