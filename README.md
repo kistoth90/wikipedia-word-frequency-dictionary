@@ -143,7 +143,7 @@ Configure in your `.env` file:
    poetry run pytest
    ```
 
-4. **Run tests coverage: <i>(95% coverage)</i>**
+4. **Run tests coverage: <i>(>90% coverage)</i>**
    ```bash
    poetry run pytest --cov=. --cov-report=term-missing
    ```

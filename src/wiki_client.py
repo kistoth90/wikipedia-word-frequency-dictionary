@@ -184,26 +184,6 @@ class WikiFrequencyCounter:
 
         return word_counter, links
 
-    def extract_links_from_html(self, html_text: str) -> list[str]:
-        """Extract Wikipedia article links from HTML content.
-
-        Thin wrapper around _extract_links_from_soup for backward compatibility.
-        """
-        soup = BeautifulSoup(html_text, "lxml")
-        body_content = soup.find("div", id="mw-content-text")
-        if not body_content:
-            logging.warning("mw-content-text div not found in HTML")
-            return []
-        return self._extract_links_from_soup(body_content)
-
-    def extract_words_from_html(self, html_text: str) -> None:
-        """Extract words from HTML content and update word counter.
-
-        Thin wrapper around extract_words_and_links for backward compatibility.
-        """
-        word_counter, _ = self.extract_words_and_links(html_text, need_links=False)
-        self.word_counter += word_counter
-
     def calculate_frequency(self) -> dict[str, dict[str, float | int]]:
         """Calculate word frequency from word counter.
 
