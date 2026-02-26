@@ -7,7 +7,6 @@ load_dotenv(dotenv_path=env_path)
 
 WIKIPEDIA_LANG = os.getenv("WIKIPEDIA_LANG", "en")
 WIKIPEDIA_DOMAIN = f"https://{WIKIPEDIA_LANG}.wikipedia.org"
-WIKIPEDIA_API_URL = f"{WIKIPEDIA_DOMAIN}/w/api.php"
 
 REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT", "30.0"))
 MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "5"))

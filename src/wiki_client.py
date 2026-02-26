@@ -78,8 +78,7 @@ class WikiFrequencyCounter:
         """
         # Remove excluded classes before extracting links
         for element in body_content.find_all(
-            class_=lambda x: x
-            and any(cls in x.lower() for cls in EXCLUDED_CLASSES)
+            class_=lambda x: x and any(cls in x.lower() for cls in EXCLUDED_CLASSES)
         ):
             element.decompose()
 
@@ -168,8 +167,7 @@ class WikiFrequencyCounter:
 
         # Remove elements with excluded classes (navigation, metadata, etc.)
         for element in body_content.find_all(
-            class_=lambda x: x
-            and any(cls in x.lower() for cls in EXCLUDED_CLASSES)
+            class_=lambda x: x and any(cls in x.lower() for cls in EXCLUDED_CLASSES)
         ):
             element.decompose()
 
@@ -235,9 +233,10 @@ class WikiFrequencyCounter:
         # word_counter, links = await loop.run_in_executor(
         #     None, self.extract_words_and_links, html_text, need_links
         # )
-        
-        word_counter, links = await asyncio.to_thread(self.extract_words_and_links, html_text, need_links)
-        
+
+        word_counter, links = await asyncio.to_thread(
+            self.extract_words_and_links, html_text, need_links
+        )
 
         # Merge counter on the event loop thread (single-threaded, safe)
         self.word_counter += word_counter
