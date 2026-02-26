@@ -231,10 +231,13 @@ class WikiFrequencyCounter:
 
         # Offload CPU-bound HTML parsing to thread pool
         need_links = current_depth < self.depth - 1
-        loop = asyncio.get_running_loop()
-        word_counter, links = await loop.run_in_executor(
-            None, self.extract_words_and_links, html_text, need_links
-        )
+        # loop = asyncio.get_running_loop()
+        # word_counter, links = await loop.run_in_executor(
+        #     None, self.extract_words_and_links, html_text, need_links
+        # )
+        
+        word_counter, links = await asyncio.to_thread(self.extract_words_and_links, html_text, need_links)
+        
 
         # Merge counter on the event loop thread (single-threaded, safe)
         self.word_counter += word_counter
